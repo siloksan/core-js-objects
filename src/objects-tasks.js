@@ -51,11 +51,6 @@ function mergeObjects(objects) {
   return target;
 }
 
-mergeObjects([
-  { a: 1, b: 2 },
-  { b: 3, c: 5 },
-]);
-
 /**
  * Removes a properties from an object.
  *
@@ -69,9 +64,13 @@ mergeObjects([
  *    removeProperties({name: 'John', age: 30, city: 'New York'}, 'age') => {name: 'John', city: 'New York'}
  *
  */
-function removeProperties(/* obj, keys */) {
-  throw new Error('Not implemented');
+function removeProperties(obj, keys) {
+  const sortObj = shallowCopy(obj);
+  keys.forEach((key) => delete sortObj[key]);
+  return sortObj;
 }
+
+removeProperties({ a: 1, b: 2, c: 3 }, ['d', 'e']);
 
 /**
  * Compares two source objects. Returns true if the objects are equal and false otherwise.
