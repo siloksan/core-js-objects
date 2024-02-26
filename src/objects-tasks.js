@@ -291,15 +291,6 @@ function sortCitiesArray(arr) {
   });
 }
 
-sortCitiesArray([
-  { country: 'Russia', city: 'Moscow' },
-  { country: 'Belarus', city: 'Minsk' },
-  { country: 'Poland', city: 'Warsaw' },
-  { country: 'Russia', city: 'Saint Petersburg' },
-  { country: 'Poland', city: 'Krakow' },
-  { country: 'Belarus', city: 'Brest' },
-]);
-
 /**
  * Groups elements of the specified array by key.
  * Returns multimap of keys extracted from array elements via keySelector callback
@@ -330,9 +321,32 @@ sortCitiesArray([
  *    "Poland" => ["Lodz"]
  *   }
  */
-function group(/* array, keySelector, valueSelector */) {
-  throw new Error('Not implemented');
+function group(array, keySelector, valueSelector) {
+  const map = new Map();
+  array.forEach((obj) => {
+    const key = keySelector(obj);
+    const value = valueSelector(obj);
+    if (map.has(key)) {
+      map.get(key).push(value);
+    } else {
+      map.set(key, new Array(value));
+    }
+  });
+  return map;
 }
+
+group(
+  [
+    { country: 'Belarus', city: 'Brest' },
+    { country: 'Russia', city: 'Omsk' },
+    { country: 'Russia', city: 'Samara' },
+    { country: 'Belarus', city: 'Grodno' },
+    { country: 'Belarus', city: 'Minsk' },
+    { country: 'Poland', city: 'Lodz' },
+  ],
+  (item) => item.country,
+  (item) => item.city
+);
 
 /**
  * Css selectors builder
