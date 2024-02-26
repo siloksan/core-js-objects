@@ -403,33 +403,86 @@ group(
  */
 
 const cssSelectorBuilder = {
-  element(/* value */) {
-    throw new Error('Not implemented');
+  orderlySelectors: {
+    element: '',
+    id: '',
+    class: '',
+    attribute: '',
+    pseudoClass: '',
+    pseudoElement: ''
   },
 
-  id(/* value */) {
-    throw new Error('Not implemented');
+  selectors: {},
+
+  element(value) {
+    const newBuilder = shallowCopy(this);
+    newBuilder.selectors += value;
+    this.checkOfSequence(newBuilder.selectors)
+    return newBuilder;
   },
 
-  class(/* value */) {
-    throw new Error('Not implemented');
+  id(value) {
+    const newBuilder = shallowCopy(this);
+    if (Object.hasOwn(newBuilder.selectors, 'id'))  {
+      throw Error('Element, id and pseudo-element should not occur more then one time inside the selector')
+    }
+    Object.assign(newBuilder.selectors, { id: `#${value}` })
+    this.checkOfSequence(newBuilder.selectors)
+    return newBuilder;
   },
 
-  attr(/* value */) {
-    throw new Error('Not implemented');
+  class(value) {
+    const newBuilder = shallowCopy(this);
+    Object.assign(newBuilder.selectors, { class: `.${value}` })
+    this.checkOfSequence(newBuilder.selectors)
+    return newBuilder;
   },
 
-  pseudoClass(/* value */) {
-    throw new Error('Not implemented');
+  attr(value) {
+    const newBuilder = shallowCopy(this);
+    Object.assign(newBuilder.selectors, { attribute: `[${value}]` })
+    this.checkOfSequence(newBuilder.selectors)
+    return newBuilder;
   },
 
-  pseudoElement(/* value */) {
-    throw new Error('Not implemented');
+  pseudoClass(value) {
+    const newBuilder = shallowCopy(this);
+    Object.assign(newBuilder.selectors, { pseudoClass: `:${value}` })
+    this.checkOfSequence(newBuilder.selectors)
+    return newBuilder;
   },
 
-  combine(/* selector1, combinator, selector2 */) {
-    throw new Error('Not implemented');
+  pseudoElement(value) {
+    const newBuilder = shallowCopy(this);
+    if (Object.hasOwn(newBuilder.selectors, 'pseudoElement'))  {
+      throw Error('Element, id and pseudo-element should not occur more then one time inside the selector')
+    }
+    Object.assign(newBuilder.selectors, { pseudoElement: `::${value}` })
+    this.checkOfSequence(newBuilder.selectors)
+    return newBuilder;
   },
+
+  combine(selector1, combinator, selector2) {
+    const newBuilder = shallowCopy(this);
+    newBuilder.selectors += `${selector1.stringify()} ${combinator} ${selector2.stringify()}`;
+    return newBuilder;
+  },
+  stringify() {
+    return Object.entries(this.selectors).reduce((selectorsString, [_, value]) => {
+      selectorsString += value;
+      return selectorsString;
+    }, '');
+  },
+  checkOfSequence(selectors) {
+    const arrSelectors = Object.keys(selectors);
+    arrSelectors.forEach((key) => {
+      cssSelectorBuilder.orderlySelectors[key] = selectors[key];
+    })
+    const orderlySelectors = Object.keys(cssSelectorBuilder.orderlySelectors).filter((key) => selectors.key !== '');
+    if (JSON.stringify(arrSelectors) !== JSON.stringify(orderlySelectors)) {
+      throw Error('elector parts should be arranged in the following order: element, id, class, attribute, pseudo-class, pseudo-element')
+    }
+  }
 };
 
 module.exports = {
