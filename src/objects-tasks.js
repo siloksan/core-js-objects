@@ -165,8 +165,34 @@ function makeWord(lettersObject) {
  *    sellTickets([25, 25, 50]) => true
  *    sellTickets([25, 100]) => false (The seller does not have enough money to give change.)
  */
-function sellTickets(/* queue */) {
-  throw new Error('Not implemented');
+function sellTickets(queue) {
+  class Seller {
+    bills;
+
+    constructor(bills) {
+      this.bills = bills;
+    }
+
+    getBills() {
+      return this.bills;
+    }
+
+    giveChange(pay) {
+      this.bills[pay] += 1;
+      let change = pay;
+      while (change > 50 && this.bills[50]) {
+        this.bills[50] -= 1;
+        change -= 50;
+      }
+      while (change > 25 && this.bills[25]) {
+        this.bills[25] -= 1;
+        change -= 25;
+      }
+      return change === 25;
+    }
+  }
+  const seller = new Seller({ 25: 0, 50: 0, 100: 0 });
+  return queue.every((pay) => seller.giveChange(pay));
 }
 
 /**
@@ -182,8 +208,12 @@ function sellTickets(/* queue */) {
  *    console.log(r.height);      // => 20
  *    console.log(r.getArea());   // => 200
  */
-function Rectangle(/* width, height */) {
-  throw new Error('Not implemented');
+function Rectangle(width, height) {
+  this.width = width;
+  this.height = height;
+  this.getArea = () => {
+    return this.width * this.height;
+  };
 }
 
 /**
