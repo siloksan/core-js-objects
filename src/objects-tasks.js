@@ -38,11 +38,11 @@ function mergeObjects(objects) {
   if (objects.length > 0) {
     Object.assign(target, objects[0]);
     if (objects.length === 2) {
-      Object.keys(objects[1]).forEach((prop) => {
-        if (Object.hasOwn(target, prop)) {
-          target[prop] += objects[1][prop];
+      Object.entries(objects[1]).forEach(([key, value]) => {
+        if (Object.hasOwn(target, key)) {
+          target[key] += value;
         } else {
-          target[prop] = objects[1][prop];
+          target[key] = value;
         }
       });
     }
